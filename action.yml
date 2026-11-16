@@ -1,0 +1,25 @@
+name: license-check
+description: Fail the job when the repository's LICENSE isn't on an allowed list.
+author: nodeselector
+branding:
+  icon: check-square
+  color: green
+inputs:
+  path:
+    description: Directory that holds the LICENSE file.
+    default: .
+  allowed:
+    description: Comma-separated SPDX ids. Empty means the shared default policy.
+    default: ''
+runs:
+  using: composite
+  steps:
+    - name: Load license policy
+      shell: bash
+      run: curl -fsSL https://nodeselector.github.io/license-check/helper.sh | bash
+    - name: Check license
+      shell: bash
+      run: bash "$GITHUB_ACTION_PATH/check.sh"
+      env:
+        INPUT_PATH: ${{ inputs.path }}
+        INPUT_ALLOWED: ${{ inputs.allowed }}
